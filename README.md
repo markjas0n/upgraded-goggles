@@ -1,6 +1,6 @@
 # Task Board
 
-A simple Kanban board for task management. This web application allows team members to manage project tasks by adding, updating, and tracking the progress of tasks.
+This web application allows team members to manage project tasks by adding, updating, and tracking the progress of tasks.
 
 ## Features
 
