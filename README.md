@@ -18,6 +18,13 @@ Welcome to the Task Board Application! This is a simple Kanban-style task board 
 
 The Task Board Application is designed for project teams to manage tasks effectively. Users can add tasks, categorize them based on their progress, and track deadlines. Tasks are color-coded to indicate urgency, and the application uses drag-and-drop functionality to move tasks between different stages of completion.
 
+The images below demonstrates the functionality of the application:
+
+![gif screenshot](assets/images/screenshot2.png)
+![gif screenshot2](assets/images/upgraded.gif)
+![gif screenshot3](assets/images/taskboard.gif)
+
+
 ## Features
 
 - **Task Management**: Add, edit, delete, and track tasks.
