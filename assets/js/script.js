@@ -1,32 +1,35 @@
-// Initialize tasks and nextId
-let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-let nextId = JSON.parse(localStorage.getItem("nextId")) || 1;
+$(document).ready(function () {
+  // Render the task list, add event listeners, and make lanes droppable
+  renderTaskList();
 
-// Generate a unique task id
-function generateTaskId() {
-  return nextId++;
-}
+  // Handle task form submission
+  $("#taskForm").on("submit", handleAddTask);
 
-// Save tasks to localStorage
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(taskList));
-  localStorage.setItem("nextId", JSON.stringify(nextId));
-}
+  // Handle task deletion
+  $(document).on("click", ".delete-task", handleDeleteTask);
 
-// Create a task card
-function createTaskCard(task) {
-  const card = $(`
-    <div class="card task-card mb-3" data-id="${task.id}">
-      <div class="card-body ${task.color}">
-        <h5 class="card-title">${task.title}</h5>
-        <p class="card-text">${task.description}</p>
-        <p class="card-text"><small>Deadline: ${task.deadline}</small></p>
-        <button class="btn btn-danger delete-task">Delete</button>
-      </div>
-    </div>
-  `);
+  // Make lanes droppable and handle drop events
+  $(".lane").droppable({
+    accept: ".task-card",
+    drop: handleDrop
+  });
 
-  card.draggable({
+  // Make the date field a date picker
+  $("#taskDeadline").datepicker({
+    dateFormat: "yy-mm-dd"
+  });
+});
+
+function renderTaskList() {
+  $("#todo-cards, #in-progress-cards, #done-cards").empty();
+
+  taskList.forEach(task => {
+    const card = createTaskCard(task);
+    $(`#${task.status}-cards`).append(card);
+  });
+
+  $(".task-card").draggable({
+    revert: "invalid",
     helper: "clone",
     start: function () {
       $(this).hide();
@@ -35,21 +38,8 @@ function createTaskCard(task) {
       $(this).show();
     }
   });
-
-  return card;
 }
 
-// Render the task list and make cards draggable
-function renderTaskList() {
-  $("#todo-cards, #in-progress-cards, #done-cards").empty();
-
-  taskList.forEach(task => {
-    const card = createTaskCard(task);
-    $(`#${task.status}-cards`).append(card);
-  });
-}
-
-// Handle adding a new task
 function handleAddTask(event) {
   event.preventDefault();
 
@@ -64,7 +54,7 @@ function handleAddTask(event) {
       description,
       deadline,
       status: 'todo',
-      color: dayjs().isAfter(dayjs(deadline)) ? 'bg-danger' : (dayjs().isBefore(dayjs(deadline).add(3, 'day')) ? 'bg-warning' : '')
+      color: dayjs().isAfter(dayjs(deadline)) ? 'bg-danger' : (dayjs(deadline).diff(dayjs(), 'day') <= 3 ? 'bg-warning' : '')
     };
 
     taskList.push(task);
@@ -75,7 +65,6 @@ function handleAddTask(event) {
   }
 }
 
-// Handle deleting a task
 function handleDeleteTask(event) {
   const card = $(event.target).closest('.task-card');
   const id = parseInt(card.data('id'));
@@ -85,7 +74,6 @@ function handleDeleteTask(event) {
   renderTaskList();
 }
 
-// Handle dropping a task into a new status lane
 function handleDrop(event, ui) {
   const card = ui.helper;
   const id = parseInt(card.data('id'));
@@ -97,15 +85,3 @@ function handleDrop(event, ui) {
   saveTasks();
   renderTaskList();
 }
-
-// When the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
-$(document).ready(function () {
-  renderTaskList();
-
-  $("#taskForm").on("submit", handleAddTask);
-  $(document).on("click", ".delete-task", handleDeleteTask);
-
-  $(".lane").droppable({
-   
-  }
-)})
